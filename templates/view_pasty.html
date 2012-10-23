@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+	{% block title %}Code Pasty | {{pasty.Name}}{% endblock %}
+	{% block container %}
+		<div class='span12'>
+		    <a href="/"><i style="float: left; margin: 10px;" class="icon-backward"></i></a>
+		    <div style="float: right">
+		    <g:plusone size="tall" href="/pasty/{{pasty.key().id()}}"></g:plusone>
+		    </div>
+		    <h1>{{pasty.Name}}</h1>
+		    {% if is_owner %}
+		    <p><a href="/pasty/delete/{{pasty.key()}}">Delete</a></p>
+		    {% endif %}
+		    <pre class="prettyprint linenums">{{pasty.Content}}</pre>
+		</div>
+	{% endblock %}

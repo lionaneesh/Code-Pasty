@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+	{% block title %}Code Pasty | Making code sharing simple{% endblock %}
+	{% block container %}
+		<div class="hero-unit">
+		    <h1 style="font-size: 50px;">Code Pasty</h1>
+		    <div style="float: right" class="nav">
+		        {% if not disable %}
+		        <h3><a href="{{logout_link}}">Logout</a></h3>
+		        {% else %}
+		        <h3><a href="{{login_link}}">Login</a></h3>
+                {% endif %}
+		    </div>
+		    <p style="padding-left: 5px;">
+		        <span style="color: #000066;">Code</span>, <span style="color: #006699;">Paste</span>, <span style="color: #FF634D;">Share</span>
+		    </p>
+		    <hr>
+		    <div class='font-size-small'>
+		    <form class="form-horizontal" method="post">
+            <fieldset>
+                <legend>Add a Pasty</legend>
+                    <div class="control-group">
+                    <label class="control-label" for="input01">Name</label>
+                    <div class="controls">
+                        <input type="text" class="span6" name="name" id="input01">
+                    </div>
+                    </div>
+                    
+                    <div class="control-group">
+                    <label class="control-label" for="input01">Content</label>
+                    <div class="controls">
+                        <textarea type="text" id="input01" rows="20" name="content" class='span6'></textarea>
+                    </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" {% if disable %}disabled="disabled"{% endif %} class="btn btn-primary {% if disable %}disabled{% endif%}">Paste</button>
+                    </div>
+            </fieldset>
+            </form>
+            </div>
+		</div>
+		{% if recent_pasties %}
+		    <h1 style="font-size: 50px;">Recent Pasties</h1>
+		    <hr>
+		    {% for pasty in recent_pasties %}
+		    <div style="float: right">
+		    <g:plusone href="/pasty/{{pasty.key().id()}}"></g:plusone>
+		    </div>
+		    <h3><a href="/pasty/{{pasty.key().id()}}">{{pasty.Name}}</a></h3>
+		    <pre class="prettyprint linenums">{{pasty.Content}}</pre>
+		    <hr>
+		    {% endfor %}
+		{% endif %}
+	{% endblock %}
+	
