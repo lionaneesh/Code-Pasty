@@ -795,6 +795,15 @@ select,
   height: auto;
 }
 
+h3 a {
+    color: #006699;
+    text-decoration: none;
+}
+
+h3 a:hover {
+    text-decoration: none;
+}
+
 label input,
 label textarea,
 label select {
