@@ -21,14 +21,14 @@
                     <div class="control-group">
                     <label class="control-label" for="input01">Name</label>
                     <div class="controls">
-                        <input type="text" class="span6" name="name" id="input01">
+                        <input type="text" class="input-xxlarge" {% if disable %}disabled{% endif %} name="name" id="input01">
                     </div>
                     </div>
                     
                     <div class="control-group">
                     <label class="control-label" for="input01">Content</label>
                     <div class="controls">
-                        <textarea type="text" id="input01" rows="20" name="content" class='span6'></textarea>
+                        <textarea type="text" id="input01" rows="20" cols="100" name="content" class='input-xxlarge' {% if disable %}disabled{% endif %}></textarea>
                     </div>
                     </div>
                     
