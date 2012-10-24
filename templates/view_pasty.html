@@ -16,26 +16,32 @@
 
     {% block extra_js %}
     <script type="text/javascript">
-    var comment = 1;
-    {% for lineno in comments %}
-    $("li.L{{lineno}}").live("click", function() {
-        if (comment == 1) {
-
-$(this).append("\
-<div id='comment'>\
-{% for comment in comments[lineno] %}\
-<p><span class='comment-author'>{{comment}}</span>\
-<span class='comment-content'> - {{comments[lineno][comment]}}</span></p><br>\
-{% endfor %}\
-</div>");
-
-            comment = 0
-        }
-        else {
-            $(this).find("#comment").remove()
-            comment = 1
-        }
+    $(window).load(function() {
+        $("li").each(function(index) {
+            $(this).attr("class", "L"+index)
+        });
     });
+    $(window).load(function() {
+    {% for lineno in comments %}
+        $("li.L{{lineno}}").before("<i class='icon-bullhorn' id='comment-markers'></i>");
+        $("li.L{{lineno}}").append("<div style='display: none;' class='toggleMe' id='comment'>{% for comment in comments[lineno] %}<p><span class='comment-author'>{{comment[0]}}</span><span class='comment-content'> - {{comment[1]}}</span></p><br>{% endfor %}</div>");
+        $("li.L{{lineno}}").attr("id", "toggleContainer")
     {% endfor %}
+    });
+    
+    $(window).load(function() {
+       $('li').after('<form style="display: none;" class="form-inline add-comment" method="post"><input type="text" name="comment" class="input-large" placeholder="Add your comment"><button type="submit" class="btn">Comment</button></form>'); 
+    });
+    </script>
+    
+    <script>
+    $(window).load(function() {
+        $("li").click(function() {
+            $(this).children('.toggleMe').toggle();
+            var lineno = $(this).attr("class").substr(1);
+            $(this).next('.form-inline').attr("action", "/add_comment/{{pasty.key().id()}}/" + lineno);
+            $(this).next('.form-inline').toggle();
+        });
+    });
     </script>
     {% endblock %}

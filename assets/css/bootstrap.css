@@ -808,7 +808,7 @@ h3 a:hover {
     padding-bottom: 10px;
 }
 
-ol.linenums > li:hover {
+#toggleContainer:hover {
     cursor:pointer;
 }
 
@@ -821,6 +821,15 @@ ol.linenums > li:hover {
 .comment-content {
     float: left;
     color: teal;
+}
+
+#comment-markers {
+    float: left;
+    margin-left: -60px;
+}
+
+.add-comment {
+    margin-left: 10px;
 }
 
 label input,
