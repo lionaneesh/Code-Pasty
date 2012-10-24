@@ -24,7 +24,7 @@
     $(window).load(function() {
     {% for lineno in comments %}
         $("li.L{{lineno}}").before("<i class='icon-bullhorn' id='comment-markers'></i>");
-        $("li.L{{lineno}}").append("<div style='display: none;' class='toggleMe' id='comment'>{% for comment in comments[lineno] %}<p><span class='comment-author'>{{comment[0]}}</span><span class='comment-content'> - {{comment[1]}}</span></p><br>{% endfor %}</div>");
+        $("li.L{{lineno}}").append("<div style='display: none;' class='toggleMe' id='comment'>{% for comment in comments[lineno] %}<p><span class='comment-author'>{{comment[1]}}</span><span class='comment-content'> - {{comment[3]}}</span></p><br>{% endfor %}</div>");
         $("li.L{{lineno}}").attr("id", "toggleContainer")
     {% endfor %}
     });

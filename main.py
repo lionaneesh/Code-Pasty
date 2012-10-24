@@ -74,9 +74,9 @@ class Add_Comments(Handler):
         else:
             comments = dict(json.loads(u.Comments));
             if lineno in comments:
-                comments[lineno].append([paster.nickname(), comment])
+                comments[lineno].append([paster.user_id(), paster.nickname(), paster.email(), comment])
             else:
-                comments[lineno] = [[paster.nickname(), comment]]
+                comments[lineno] = [[paster.user_id(), paster.nickname(), paster.email(), comment]]
             u.Comments = json.dumps(comments)
             u.put()
             self.redirect('/pasty/' + str(id))
