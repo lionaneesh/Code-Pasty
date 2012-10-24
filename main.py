@@ -22,7 +22,9 @@ from google.appengine.ext import db
 from google.appengine.api import users
 
 from Template_Handler import Handler
-from Pasty import Pasty # The Pasty DB Class
+from Pasty   import Pasty # The Pasty DB Class
+from Comment import Comment # The Pasty DB Class
+
 
 #---- Webpage Handlers
 
@@ -58,28 +60,22 @@ class View_Pasty(Handler):
             self.error(404);
         else:
             is_owner = (u.User == paster)
-            # {"1": [["Justin Ruggles": "Some issues here!"], ["Aneesh Dogra": "Some issues here!"]}
-            self.render("view_pasty.html", pasty=u, is_owner=is_owner, logged_in=bool(paster), comments=json.loads(u.Comments))
+            u2 = db.GqlQuery("SELECT * FROM Comment WHERE PostId=:1 ORDER BY Last_Modified", id)
+            self.render("view_pasty.html", pasty=u, is_owner=is_owner, logged_in=bool(paster), comments=u2)
 
 class Add_Comments(Handler):
     def post(self, id, lineno):
         paster = users.get_current_user()
-        u      = Pasty.get_by_id(int(id))
         comment = self.request.get('comment').strip()
 
-        if u == None or comment == '':
+        if paster == None or comment == '':
             self.error("203")
         elif not paster:
             self.error("403")
         else:
-            comments = dict(json.loads(u.Comments));
-            if lineno in comments:
-                comments[lineno].append([paster.user_id(), paster.nickname(), paster.email(), comment])
-            else:
-                comments[lineno] = [[paster.user_id(), paster.nickname(), paster.email(), comment]]
-            u.Comments = json.dumps(comments)
+            u = Comment(User=paster, Content=comment, PostId=id, LineNo=lineno)
             u.put()
-            self.redirect('/pasty/' + str(id))
+            self.redirect('/pasty/' + id)
 
 class Pasty_Manipulation(Handler):
     def delete_pasty(self, key):
