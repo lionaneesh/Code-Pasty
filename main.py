@@ -31,7 +31,7 @@ from Comment import Comment # The Pasty DB Class
 class Home(Handler):    
     def get(self):
         paster = users.get_current_user()
-        u = db.GqlQuery("SELECT * FROM Pasty ORDER BY Last_Modified DESC LIMIT 10")
+        u = db.GqlQuery("SELECT * FROM Pasty ORDER BY Created DESC LIMIT 10")
         if u.count() < 1:
             u = None
         if paster:
@@ -60,7 +60,7 @@ class View_Pasty(Handler):
             self.error(404);
         else:
             is_owner = (u.User == paster)
-            u2 = db.GqlQuery("SELECT * FROM Comment WHERE PostId=:1 ORDER BY Last_Modified", id)
+            u2 = db.GqlQuery("SELECT * FROM Comment WHERE PostId=:1 ORDER BY Created", id)
             self.render("view_pasty.html", pasty=u, is_owner=is_owner, logged_in=bool(paster), comments=u2)
 
 class Add_Comments(Handler):

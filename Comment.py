@@ -25,6 +25,6 @@ from google.appengine.ext import db
 class Comment(db.Model):
     User          = db.UserProperty(required = True)
     Content       = db.TextProperty(required = True)
-    Last_Modified = db.DateTimeProperty(auto_now = True)
+    Created       = db.DateTimeProperty(auto_now_add = True)
     PostId        = db.StringProperty(required = True)
     LineNo        = db.StringProperty(required = True)
