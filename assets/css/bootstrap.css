@@ -804,6 +804,25 @@ h3 a:hover {
     text-decoration: none;
 }
 
+#comment {
+    padding-bottom: 10px;
+}
+
+ol.linenums > li:hover {
+    cursor:pointer;
+}
+
+.comment-author {
+    float: left;
+    text-decoration: underline;
+    color: black;
+}
+
+.comment-content {
+    float: left;
+    color: teal;
+}
+
 label input,
 label textarea,
 label select {

@@ -13,3 +13,29 @@
 		    <pre class="prettyprint linenums">{{pasty.Content}}</pre>
 		</div>
 	{% endblock %}
+
+    {% block extra_js %}
+    <script type="text/javascript">
+    var comment = 1;
+    {% for lineno in comments %}
+    $("li.L{{lineno}}").live("click", function() {
+        if (comment == 1) {
+
+$(this).append("\
+<div id='comment'>\
+{% for comment in comments[lineno] %}\
+<p><span class='comment-author'>{{comment}}</span>\
+<span class='comment-content'> - {{comments[lineno][comment]}}</span></p><br>\
+{% endfor %}\
+</div>");
+
+            comment = 0
+        }
+        else {
+            $(this).find("#comment").remove()
+            comment = 1
+        }
+    });
+    {% endfor %}
+    </script>
+    {% endblock %}

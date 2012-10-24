@@ -57,7 +57,7 @@ class View_Pasty(Handler):
             self.error(404);
         else:
             is_owner = (u.User == paster)
-            self.render("view_pasty.html", pasty=u, is_owner=is_owner)
+            self.render("view_pasty.html", pasty=u, is_owner=is_owner, comments = {"1": {"Justin Ruggles": "Some issues here!", "Aneesh Dogra": "Some issues here!"}})
     
 class Pasty_Manipulation(Handler):
     def delete_pasty(self, key):
