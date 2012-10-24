@@ -39,15 +39,10 @@
             </div>
 		</div>
 		{% if recent_pasties %}
-		    <h1 style="font-size: 50px;">Recent Pasties</h1>
+		    <h2>Recent Pasties</h2>
 		    <hr>
 		    {% for pasty in recent_pasties %}
-		    <div style="float: right">
-		    <g:plusone href="/pasty/{{pasty.key().id()}}"></g:plusone>
-		    </div>
-		    <h3><a href="/pasty/{{pasty.key().id()}}">{{pasty.Name}}</a></h3>
-		    <pre class="prettyprint linenums">{{pasty.Content}}</pre>
-		    <hr>
+		    <h3><a href="/pasty/{{pasty.key().id()}}">{{pasty.Name}}</a> <span style="font-weight: 200;">by {{pasty.User.nickname()}}</span></h3>
 		    {% endfor %}
 		{% endif %}
 	{% endblock %}
