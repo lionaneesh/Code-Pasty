@@ -30,7 +30,7 @@
     });
     
     $(window).load(function() {
-       $('li').after('<form style="display: none;" class="form-inline add-comment" method="post"><input type="text" name="comment" class="input-large" placeholder="Add your comment"><button type="submit" class="btn">Comment</button></form>'); 
+       $('li').after('<form style="display: none;" class="form-inline add-comment" method="post"><input type="text" {% if not logged_in %}disabled{% endif %} name="comment" class="input-large" placeholder="Add your comment"><button type="submit" class="btn" {% if not logged_in %}disabled{% endif %}>Comment</button></form>'); 
     });
     </script>
     
