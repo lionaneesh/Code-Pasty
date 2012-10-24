@@ -443,7 +443,7 @@ h5,
 h6 {
   margin: 0;
   font-family: inherit;
-  font-weight: bold;
+  font-weight: 200;
   color: inherit;
   text-rendering: optimizelegibility;
 }
@@ -4971,6 +4971,7 @@ a.badge:hover {
   font-size: 60px;
   line-height: 1;
   letter-spacing: -1px;
+  font-weight: 400;
   color: inherit;
 }
 
