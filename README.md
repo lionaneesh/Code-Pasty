@@ -1,7 +1,7 @@
 Code Pasty
 ==========
 
-A simple code sharing website, supporting inline comments, syntax highlighting and sharing.
+A simple code sharing website, supporting inline comments, syntax highlighting and code sharing.
 
 FAQ
 ===
