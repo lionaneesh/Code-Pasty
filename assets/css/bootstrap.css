@@ -1507,7 +1507,6 @@ legend + .control-group {
 
 .form-horizontal .control-label {
   float: left;
-  width: 140px;
   padding-top: 5px;
   text-align: right;
 }
@@ -1515,7 +1514,7 @@ legend + .control-group {
 .form-horizontal .controls {
   *display: inline-block;
   *padding-left: 20px;
-  margin-left: 160px;
+  margin-left: 143px;
   *margin-left: 0;
 }
 
