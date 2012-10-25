@@ -813,14 +813,19 @@ h3 a:hover {
 }
 
 .comment-author {
-    float: left;
     text-decoration: underline;
-    color: black;
+    color: #5DB0E6;
 }
 
 .comment-content {
-    float: left;
-    color: teal;
+    color: white;
+}
+
+.comment_container {
+    background: #181C21;
+    padding: 10px;
+    text-shadow: none;
+    border-bottom: 1px solid white;
 }
 
 #comment-markers {

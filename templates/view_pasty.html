@@ -27,7 +27,7 @@
         if ($("li.L{{comment.LineNo}}").prev('.icon-bullhorn').length == 0) {
             $("li.L{{comment.LineNo}}").before("<i class='icon-bullhorn' id='comment-markers'></i>");
         }
-        $("li.L{{comment.LineNo}}").append("<div style='display: none;' class='toggleMe' id='comment'><p><span class='comment-author'>{{comment.User.nickname()}}</span><span class='comment-content'> - {{comment.Content}}</span></p><br></div>");
+        $("li.L{{comment.LineNo}}").append("<div style='display: none;' class='toggleMe comment_container' id='comment'><span class='comment-author'>{{comment.User.nickname()}}</span><span class='comment-content'> - {{comment.Content}}</span></div>");
         $("li.L{{comment.LineNo}}").attr("id", "toggleContainer")
     {% endfor %}
     });
