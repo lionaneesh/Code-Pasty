@@ -17,7 +17,6 @@
 # limitations under the License.
 
 import webapp2
-import json
 from google.appengine.ext import db
 from google.appengine.api import users
 
@@ -48,7 +47,7 @@ class Home(Handler):
         content = self.request.get('content').strip()
 
         if name and content and bool(paster):
-            u = Pasty(Name = name, Content = content, User = paster, Comments = json.dumps({}))
+            u = Pasty(Name = name, Content = content, User = paster)
             u.put()
             self.redirect('/pasty/%s' % u.key().id())
         else:
