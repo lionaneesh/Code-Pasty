@@ -22,8 +22,11 @@ from google.appengine.ext import db
 from google.appengine.api import users
 
 from Template_Handler import Handler
-from Pasty   import Pasty # The Pasty DB Class
-from Comment import Comment # The Pasty DB Class
+
+#-- Database Classes
+
+from Pasty   import Pasty
+from Comment import Comment
 
 
 #---- Webpage Handlers
