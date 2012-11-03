@@ -42,7 +42,7 @@ class Home(Handler):
 
     def post(self):
         paster = users.get_current_user()
-        name    = self.request.get('name').strip()
+        name    = self.request.get('name').strip() or "Anonymous"
         content = self.request.get('content').strip()
 
         if name and content and bool(paster):
@@ -52,7 +52,6 @@ class Home(Handler):
         else:
             self.redirect(users.create_login_url(self.request.uri))
 
-  
 class View_Pasty(Handler):
     def get(self, id):
         paster = users.get_current_user()
