@@ -27,7 +27,6 @@ from Template_Handler import Handler
 from Pasty   import Pasty
 from Comment import Comment
 
-
 #---- Webpage Handlers
 
 class Home(Handler):    
