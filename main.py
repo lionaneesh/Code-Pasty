@@ -61,9 +61,23 @@ class View_Pasty(Handler):
             self.error(404);
         else:
             is_owner = (u.User == paster)
-            u2 = db.GqlQuery("SELECT * FROM Comment WHERE PostId=:1 ORDER BY Created", id)
-            self.render("view_pasty.html", pasty=u, is_owner=is_owner, logged_in=bool(paster), comments=u2)
+            u2 = db.GqlQuery("SELECT * FROM Comment WHERE PostId=:1 ORDER BY Created DESC", id)
+            self.render("view_pasty.html", pasty=u, is_owner=is_owner, logged_in=bool(paster),
+                        comments=u2, paster=paster)
 
+class Delete_Comment(Handler):
+    def get(self, key):
+        paster = users.get_current_user()
+        u = db.GqlQuery("SELECT * FROM Comment WHERE __key__ = KEY(:1)", key)
+        
+        if u.count() == 1:
+            comment = u.fetch(1)[0]
+            if comment.User == paster:
+                db.delete(u)
+            else:
+                self.error('403')
+        else:
+            self.error('404')    
 class Add_Comments(Handler):
     def post(self, id, lineno):
         paster = users.get_current_user()
@@ -95,4 +109,5 @@ class Pasty_Manipulation(Handler):
 app = webapp2.WSGIApplication([(r'/'               , Home),
                                (r'/pasty/([0-9]+)',  View_Pasty),
                                (r'/pasty/(.+)/(.+)', Pasty_Manipulation),
-                               (r'/add_comment/([0-9]+)/([0-9]+)', Add_Comments)], debug=True)
+                               (r'/add_comment/([0-9]+)/([0-9]+)', Add_Comments),
+                               (r'/comments/delete/(.+)', Delete_Comment)], debug=True)

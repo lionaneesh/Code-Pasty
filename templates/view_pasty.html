@@ -21,29 +21,39 @@
             $(this).attr("class", "L"+index)
         });
     });
+
     $(window).load(function() {
-    var lineNos = [];
+       $('li').after('<form style="display: none;" class="form-inline add-comment" method="post"><input type="text" {% if not logged_in %}disabled{% endif %} name="comment" class="input-large" placeholder="Add your comment"><button type="submit" class="btn" {% if not logged_in %}disabled{% endif %}>Comment</button></form>'); 
+    });
+    
+    $(window).load(function() {
     {% for comment in comments %}
         if ($("li.L{{comment.LineNo}}").prev('.icon-bullhorn').length == 0) {
             $("li.L{{comment.LineNo}}").before("<i class='icon-bullhorn' id='comment-markers'></i>");
         }
-        $("li.L{{comment.LineNo}}").append("<div style='display: none;' class='toggleMe comment_container' id='comment'><span class='comment-author'>{{comment.User.nickname()}}</span><span class='comment-content'> - {{comment.Content}}</span></div>");
+        $("li.L{{comment.LineNo}}").after("<div style='display: none;' class='toggleMe{{comment.LineNo}} comment_container' id='{{ comment.key() }}'><span class='comment-author'>{{comment.User.nickname()}}</span><span class='comment-content'> - {{comment.Content}}</span> {% if comment.User == paster %}| <a class='deleteComment' href=\"javascript:void(0);\" onclick=\"delete_comment('{{ comment.key() }}')\">Delete</a>{% endif %}</div>");
         $("li.L{{comment.LineNo}}").attr("id", "toggleContainer")
     {% endfor %}
     });
     
-    $(window).load(function() {
-       $('li').after('<form style="display: none;" class="form-inline add-comment" method="post"><input type="text" {% if not logged_in %}disabled{% endif %} name="comment" class="input-large" placeholder="Add your comment"><button type="submit" class="btn" {% if not logged_in %}disabled{% endif %}>Comment</button></form>'); 
-    });
+    function delete_comment(key) {
+            $.get('/comments/delete/' + key)
+            .error( function () {
+                alert("Something went Wrong!");
+            })
+            .success( function () {
+                $("#"+key).remove()
+            })
+    }
     </script>
     
     <script>
     $(window).load(function() {
         $("li").click(function() {
-            $(this).children('.toggleMe').toggle();
             var lineno = $(this).attr("class").substr(1);
-            $(this).next('.form-inline').attr("action", "/add_comment/{{pasty.key().id()}}/" + lineno);
-            $(this).next('.form-inline').toggle();
+            $(this).nextAll('.toggleMe'+lineno).toggle();
+            $(this).nextAll('.add-comment:eq(0)').attr("action", "/add_comment/{{pasty.key().id()}}/" + lineno);
+            $(this).nextAll('.add-comment:eq(0)').toggle();
         });
     });
     </script>

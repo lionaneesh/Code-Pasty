@@ -18,6 +18,12 @@ indexes:
 - kind: Comment
   properties:
   - name: PostId
+  - name: Created
+    direction: desc
+
+- kind: Comment
+  properties:
+  - name: PostId
   - name: Date_Modified
 
 - kind: Comment
