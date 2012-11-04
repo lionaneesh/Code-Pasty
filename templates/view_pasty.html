@@ -8,7 +8,7 @@
 		    </div>
 		    <h1>{{pasty.Name}}</h1>
 		    {% if is_owner %}
-		    <p><a href="/pasty/delete/{{pasty.key()}}">Delete</a></p>
+		    <p><a href="/pasty/delete/{{pasty.key()}}">Delete</a> | <a href="/pasty/edit_pasty/{{pasty.key()}}">Edit</a></p>
 		    {% endif %}
 		    <pre class="prettyprint linenums">{{pasty.Content}}</pre>
 		</div>

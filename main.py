@@ -92,18 +92,68 @@ class Add_Comments(Handler):
             self.redirect('/pasty/' + id)
 
 class Pasty_Manipulation(Handler):
+    
+    #-- GET functions
+    
     def delete_pasty(self, key):
         u = db.GqlQuery("SELECT * FROM Pasty WHERE __key__ = KEY('%s')" % (key))
         if u.count() == 1:
             db.delete(u)
-
+            self.redirect('/')
+        else:
+            self.error('404')
+    
+    def edit_pasty(self, key):
+        paster = users.get_current_user()
+        u = db.GqlQuery("SELECT * FROM Pasty WHERE __key__ = KEY('%s')" % (key))
+        if u.count() == 1:
+            u = u.fetch(1)[0]
+            if paster == u.User:
+                self.render('edit_pasty.html', pasty=u)
+            else:
+                self.error('403')
+        else:
+            self.error('404')
+        
     def get(self, action, key):
-        actions = {'delete': self.delete_pasty}
+        actions = {'delete': self.delete_pasty,
+                   'edit_pasty': self.edit_pasty }
         
         if action in actions:
                 actions[action](key)
-        
-        self.redirect('/')
+        else:
+            self.error('404')
+    
+    #-- POST functions
+    
+    def edit_pasty_post(self, key):
+        paster  = users.get_current_user()
+        name    = self.request.get('name').strip() or "Anonymous"
+        content = self.request.get('content').strip()
+
+        if name and content:
+            u = db.GqlQuery("SELECT * FROM Pasty WHERE __key__ = KEY('%s')" % (key))
+            if u.count() == 1:
+                u = u.fetch(1)[0]
+                if u.User == paster:
+                    u.Name = name
+                    u.Content = content
+                    u.put()
+                    self.redirect('/pasty/%s' % u.key().id())
+                else:
+                    self.error('403')
+            else:
+                self.error('203')
+        else:
+            self.redirect('/pasty/edit_pasty/'+key)
+            
+    def post(self, action, key):
+        actions = {'edit_pasty': self.edit_pasty_post}
+
+        if action in actions:
+                actions[action](key)
+        else:
+            self.error('404')
 
 app = webapp2.WSGIApplication([(r'/'               , Home),
                                (r'/pasty/([0-9]+)',  View_Pasty),
