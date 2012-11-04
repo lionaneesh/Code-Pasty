@@ -57,6 +57,8 @@ class Home(Handler):
             u.put()
             
             # Update Memcache
+            
+            # First update the recent posts
             if not bool(private):
                 recent = memcache.get('recent')
                 if recent:
@@ -65,6 +67,8 @@ class Home(Handler):
                         recent.pop()
                     memcache.set('recent', recent)
 
+            # Now update the post memcache
+            memcache.set("pasty:%s" % (str(u.key().id())), u)
             self.redirect('/pasty/%s' % u.key().id())
         
         else:
@@ -73,18 +77,23 @@ class Home(Handler):
 class View_Pasty(Handler):
     def get(self, id):
         paster = users.get_current_user()
-        u = Pasty.get_by_id(int(id))
-        if u == None:
-            self.error(404);
-        else:
-            is_owner = (u.User == paster)
-            u2 = memcache.get("comments:%s" % id)
-            if u2 is None:
-                u2 = db.GqlQuery("SELECT * FROM Comment WHERE PostId=:1 ORDER BY Created", id)
-                u2 = u2.fetch(None)
-                if not memcache.add("comments:" + id, u2):
-                    logging.error('Memcache set failed, while trying to add comments:' + id)
-            self.render("view_pasty.html", pasty=u, is_owner=is_owner, logged_in=bool(paster),
+        u = memcache.get("pasty:%s" % id)
+        if not u:
+            u = Pasty.get_by_id(int(id))
+            if u == None:
+                self.error(404);
+            else:
+                memcache.set("pasty:%s" % (str(u.key().id())), u)
+
+        is_owner = (u.User == paster)
+        u2 = memcache.get("comments:%s" % id)
+        if u2 is None:
+            u2 = db.GqlQuery("SELECT * FROM Comment WHERE PostId=:1 ORDER BY Created", id)
+            u2 = u2.fetch(None)
+            if not memcache.add("comments:" + id, u2):
+                logging.error('Memcache set failed, while trying to add comments:' + id)
+
+        self.render("view_pasty.html", pasty=u, is_owner=is_owner, logged_in=bool(paster),
                         comments=reversed(u2), paster=paster)
 
 class Delete_Comment(Handler):
@@ -149,73 +158,78 @@ class Pasty_Manipulation(Handler):
     
     #-- GET functions
     
-    def delete_pasty(self, key):
-        u = db.GqlQuery("SELECT * FROM Pasty WHERE __key__ = KEY('%s')" % (key))
-        if u.count() == 1:
-            pasty = u.fetch(1)[0]
-            pasty_id = pasty.key().id()
+    def delete_pasty(self, id):
+        u = Pasty.get_by_id(int(id))
+        if u:
+            memcache.delete('pasty:'+ id)
             memcache.delete('recent')
             logging.debug("Deleting 'recent' from memcache.")
-            memcache.delete('comments:'+str(pasty.key().id()))
-            db.delete(pasty)
+            memcache.delete('comments:'+ id)
+            db.delete(u)
             self.redirect('/')
         else:
             self.error('404')
     
-    def edit_pasty(self, key):
-        paster = users.get_current_user()
-        u = db.GqlQuery("SELECT * FROM Pasty WHERE __key__ = KEY('%s')" % (key))
-        if u.count() == 1:
-            u = u.fetch(1)[0]
-            if paster == u.User:
-                self.render('edit_pasty.html', pasty=u)
-            else:
-                self.error('403')
+    def edit_pasty(self, id):
+        paster  = users.get_current_user()
+        u = memcache.get("pasty:%s" % id)
+        if not u:
+            u = Pasty.get_by_id(int(id))
+            if not u:
+                self.error('404')
+
+        if paster == u.User:
+            self.render('edit_pasty.html', pasty=u)
         else:
-            self.error('404')
-        
-    def get(self, action, key):
+            self.error('403')
+
+    def get(self, action, id):
         actions = {'delete': self.delete_pasty,
                    'edit_pasty': self.edit_pasty }
         
         if action in actions:
-                actions[action](key)
+                actions[action](id)
         else:
             self.error('404')
     
     #-- POST functions
     
-    def edit_pasty_post(self, key):
+    def edit_pasty_post(self, id):
         paster  = users.get_current_user()
         name    = self.request.get('name').strip() or "Anonymous"
         content = self.request.get('content').strip()
 
         if name and content:
-            u = db.GqlQuery("SELECT * FROM Pasty WHERE __key__ = KEY('%s')" % (key))
-            if u.count() == 1:
-                u = u.fetch(1)[0]
+            u = Pasty.get_by_id(int(id))
+            u2 = memcache.get("pasty:%s" % id)
+            
+            if u:
                 if u.User == paster:
                     u.Name = name
                     u.Content = content
                     u.put()
-                    self.redirect('/pasty/%s' % u.key().id())
+                    if u2:
+                        u2.Name = name
+                        u2.Content = content
+                        memcache.set("pasty:"+id, u2)
+                    self.redirect('/pasty/%s' % id)
                 else:
                     self.error('403')
             else:
                 self.error('203')
         else:
-            self.redirect('/pasty/edit_pasty/'+key)
+            self.redirect('/pasty/edit_pasty/'+id)
             
-    def post(self, action, key):
+    def post(self, action, id):
         actions = {'edit_pasty': self.edit_pasty_post}
 
         if action in actions:
-                actions[action](key)
+                actions[action](id)
         else:
             self.error('404')
 
 app = webapp2.WSGIApplication([(r'/'               , Home),
                                (r'/pasty/([0-9]+)',  View_Pasty),
-                               (r'/pasty/(.+)/(.+)', Pasty_Manipulation),
+                               (r'/pasty/(.+)/([0-9]+)', Pasty_Manipulation),
                                (r'/add_comment/([0-9]+)/([0-9]+)', Add_Comments),
                                (r'/comments/delete/(.+)', Delete_Comment)], debug=True)
