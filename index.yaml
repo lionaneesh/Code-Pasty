@@ -30,3 +30,9 @@ indexes:
   properties:
   - name: PostId
   - name: Last_Modified
+
+- kind: Pasty
+  properties:
+  - name: Private
+  - name: Created
+    direction: desc

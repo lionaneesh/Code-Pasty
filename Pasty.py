@@ -27,3 +27,4 @@ class Pasty(db.Model):
     Content       = db.TextProperty(required = True)
     User          = db.UserProperty(required = True)
     Created       = db.DateTimeProperty(auto_now_add = True)
+    Private       = db.BooleanProperty(default = False)

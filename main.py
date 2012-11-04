@@ -36,7 +36,7 @@ class Home(Handler):
         paster = users.get_current_user()
         recent = memcache.get('recent')
         if not recent:
-            u = db.GqlQuery("SELECT * FROM Pasty ORDER BY Created DESC LIMIT 10")
+            u = db.GqlQuery("SELECT * FROM Pasty WHERE Private=False ORDER BY Created DESC LIMIT 10")
             recent = u.fetch(10)
             if not memcache.add('recent', recent):
                 logging.error("Failed to add 'recent' to memcache.")
@@ -49,20 +49,23 @@ class Home(Handler):
         paster = users.get_current_user()
         name    = self.request.get('name').strip() or "Anonymous"
         content = self.request.get('content').strip()
+        private = self.request.get('private').strip()
 
         if name and content and bool(paster):
-            u = Pasty(Name = name, Content = content, User = paster)
+            u = Pasty(Name = name, Content = content, User = paster, Private = bool(private))
             u.put()
             
             # Update Memcache
-            recent = memcache.get('recent')
-            if recent:
-                recent.insert(0, u)
-                if len(recent) > 10:
-                    recent.pop()
-                memcache.set('recent', recent)
-            
+            if not bool(private):
+                recent = memcache.get('recent')
+                if recent:
+                    recent.insert(0, u)
+                    if len(recent) > 10:
+                        recent.pop()
+                    memcache.set('recent', recent)
+
             self.redirect('/pasty/%s' % u.key().id())
+        
         else:
             self.redirect(users.create_login_url(self.request.uri))
 
