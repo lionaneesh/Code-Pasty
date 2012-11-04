@@ -17,8 +17,10 @@
 # limitations under the License.
 
 import webapp2
+import logging
 from google.appengine.ext import db
 from google.appengine.api import users
+from google.appengine.api import memcache
 
 from Template_Handler import Handler
 
@@ -60,9 +62,14 @@ class View_Pasty(Handler):
             self.error(404);
         else:
             is_owner = (u.User == paster)
-            u2 = db.GqlQuery("SELECT * FROM Comment WHERE PostId=:1 ORDER BY Created DESC", id)
+            u2 = memcache.get("comments:%s" % id)
+            if u2 is None:
+                u2 = db.GqlQuery("SELECT * FROM Comment WHERE PostId=:1 ORDER BY Created", id)
+                u2 = u2.fetch(None)
+                if not memcache.add("comments:" + id, u2):
+                    logging.error('Memcache set failed.')
             self.render("view_pasty.html", pasty=u, is_owner=is_owner, logged_in=bool(paster),
-                        comments=u2, paster=paster)
+                        comments=reversed(u2), paster=paster)
 
 class Delete_Comment(Handler):
     def get(self, key):
@@ -71,12 +78,35 @@ class Delete_Comment(Handler):
         
         if u.count() == 1:
             comment = u.fetch(1)[0]
+            
             if comment.User == paster:
+                comment_id = comment.key().id()
+                post_id = comment.PostId
+                # Let's first delete it from memcache
+                comments = memcache.get('comments:'+post_id)
+                logging.error("%s: %s" % (str(comments), comment.PostId))
+                # we've got a list of comments now
+                # lets delete what we need to
+                removed_from_memcache = 0
+                for com in comments:
+                    if com.key().id() == comment_id:
+                        comments.remove(com)
+                        memcache.set("comments:"+post_id, comments)
+                        removed_from_memcache = 1
+                        break
+                
+                if removed_from_memcache == 0:
+                    # Something's wrong with the memcache, lets clean it up
+                    memcache.delete('comments:'+post_id)
+
+                # Now from the DB
                 db.delete(u)
+
             else:
                 self.error('403')
         else:
-            self.error('404')    
+            self.error('404')
+    
 class Add_Comments(Handler):
     def post(self, id, lineno):
         paster = users.get_current_user()
@@ -89,6 +119,13 @@ class Add_Comments(Handler):
         else:
             u = Comment(User=paster, Content=comment, PostId=id, LineNo=lineno)
             u.put()
+            m = memcache.get("comments:"+id)
+            if m is None:
+                logging.debug("adding new memcache entry for comments:"+id)
+                memcache.add("comments:"+id, [u])
+            else:
+                m.append(u)
+                memcache.set("comments:"+id, m)
             self.redirect('/pasty/' + id)
 
 class Pasty_Manipulation(Handler):
@@ -98,7 +135,9 @@ class Pasty_Manipulation(Handler):
     def delete_pasty(self, key):
         u = db.GqlQuery("SELECT * FROM Pasty WHERE __key__ = KEY('%s')" % (key))
         if u.count() == 1:
-            db.delete(u)
+            pasty = u.fetch(1)[0]
+            memcache.delete('comments:'+str(pasty.key().id()))
+            db.delete(pasty)
             self.redirect('/')
         else:
             self.error('404')
