@@ -67,7 +67,7 @@ class View_Pasty(Handler):
                 u2 = db.GqlQuery("SELECT * FROM Comment WHERE PostId=:1 ORDER BY Created", id)
                 u2 = u2.fetch(None)
                 if not memcache.add("comments:" + id, u2):
-                    logging.error('Memcache set failed.')
+                    logging.error('Memcache set failed, while trying to add comments:' + id)
             self.render("view_pasty.html", pasty=u, is_owner=is_owner, logged_in=bool(paster),
                         comments=reversed(u2), paster=paster)
 
@@ -96,15 +96,17 @@ class Delete_Comment(Handler):
                         break
                 
                 if removed_from_memcache == 0:
-                    # Something's wrong with the memcache, lets clean it up
+                    # Something's wrong with this memcache entry, lets clean it up
+                    logging.error("Something wrong with comment:"+post_id+". I can't find the comment to delete. \
+                                   Clearing this cache entry to prevent wrong output.")
                     memcache.delete('comments:'+post_id)
 
                 # Now from the DB
                 db.delete(u)
 
-            else:
+            else: # unauthorized
                 self.error('403')
-        else:
+        else: # no such entry
             self.error('404')
     
 class Add_Comments(Handler):
@@ -121,7 +123,7 @@ class Add_Comments(Handler):
             u.put()
             m = memcache.get("comments:"+id)
             if m is None:
-                logging.debug("adding new memcache entry for comments:"+id)
+                logging.debug("Adding new memcache entry for comments:"+id)
                 memcache.add("comments:"+id, [u])
             else:
                 m.append(u)
