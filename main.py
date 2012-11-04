@@ -34,13 +34,16 @@ from Comment import Comment
 class Home(Handler):    
     def get(self):
         paster = users.get_current_user()
-        u = db.GqlQuery("SELECT * FROM Pasty ORDER BY Created DESC LIMIT 10")
-        if u.count() < 1:
-            u = None
+        recent = memcache.get('recent')
+        if not recent:
+            u = db.GqlQuery("SELECT * FROM Pasty ORDER BY Created DESC LIMIT 10")
+            recent = u.fetch(10)
+            if not memcache.add('recent', recent):
+                logging.error("Failed to add 'recent' to memcache.")
         if paster:
-            self.render('index.html', recent_pasties=u, logout_link=users.create_logout_url('/'), disable=not bool(paster))
+            self.render('index.html', recent_pasties=recent, logout_link=users.create_logout_url('/'), disable=not bool(paster))
         else:
-            self.render('index.html', recent_pasties=u, login_link=users.create_login_url(self.request.uri), disable=not bool(paster))
+            self.render('index.html', recent_pasties=recent, login_link=users.create_login_url(self.request.uri), disable=not bool(paster))
 
     def post(self):
         paster = users.get_current_user()
@@ -50,6 +53,15 @@ class Home(Handler):
         if name and content and bool(paster):
             u = Pasty(Name = name, Content = content, User = paster)
             u.put()
+            
+            # Update Memcache
+            recent = memcache.get('recent')
+            if recent:
+                recent.insert(0, u)
+                if len(recent) > 10:
+                    recent.pop()
+                memcache.set('recent', recent)
+            
             self.redirect('/pasty/%s' % u.key().id())
         else:
             self.redirect(users.create_login_url(self.request.uri))
@@ -138,6 +150,8 @@ class Pasty_Manipulation(Handler):
         u = db.GqlQuery("SELECT * FROM Pasty WHERE __key__ = KEY('%s')" % (key))
         if u.count() == 1:
             pasty = u.fetch(1)[0]
+            pasty_id = pasty.key().id()
+            memcache.delete('recent')            
             memcache.delete('comments:'+str(pasty.key().id()))
             db.delete(pasty)
             self.redirect('/')
