@@ -36,6 +36,7 @@ class Home(Handler):
         paster = users.get_current_user()
         recent = memcache.get('recent')
         if not recent:
+            logging.debug("Adding 'recent' to memcache.")
             u = db.GqlQuery("SELECT * FROM Pasty WHERE Private=False ORDER BY Created DESC LIMIT 10")
             recent = u.fetch(10)
             if not memcache.add('recent', recent):
@@ -99,7 +100,6 @@ class Delete_Comment(Handler):
                 post_id = comment.PostId
                 # Let's first delete it from memcache
                 comments = memcache.get('comments:'+post_id)
-                logging.error("%s: %s" % (str(comments), comment.PostId))
                 # we've got a list of comments now
                 # lets delete what we need to
                 removed_from_memcache = 0
@@ -154,7 +154,8 @@ class Pasty_Manipulation(Handler):
         if u.count() == 1:
             pasty = u.fetch(1)[0]
             pasty_id = pasty.key().id()
-            memcache.delete('recent')            
+            memcache.delete('recent')
+            logging.debug("Deleting 'recent' from memcache.")
             memcache.delete('comments:'+str(pasty.key().id()))
             db.delete(pasty)
             self.redirect('/')
