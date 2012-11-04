@@ -216,7 +216,7 @@ class Pasty_Manipulation(Handler):
                 else:
                     self.error('403')
             else:
-                self.error('203')
+                self.error('404')
         else:
             self.redirect('/pasty/edit_pasty/'+id)
             
