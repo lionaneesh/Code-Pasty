@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 	{% block title %}Code Pasty | {{pasty.Name}}{% endblock %}
+    {% if pasty.Private %}
+        {% block extra_meta %}
+    <meta name="robots" content="noindex,nofollow" />
+        {% endblock %}
+    {% endif %}
+
 	{% block container %}
 		<div class='span12'>
 		    <a href="/"><i style="float: left; margin: 10px;" class="icon-backward"></i></a>
