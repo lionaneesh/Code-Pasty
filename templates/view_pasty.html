@@ -20,6 +20,8 @@
 		        Click on a line number to view/add comments for that line.
 		        The megaphone (<i class='icon-bullhorn'></i>)
 		        icon indicates lines which already have comments.
+		        You can <a href="javascript:collapse_all()">Click Here</a>
+		        to collapse all comments at once.
 		    </div>
 		    <pre class="prettyprint linenums">{{pasty.Content}}</pre>
 		</div>
@@ -32,6 +34,10 @@
             $(this).attr("class", "L"+index)
         });
     });
+    
+    function collapse_all() {
+       $(".comment_container").toggle()
+    }
 
     $(window).load(function() {
        $('li').after('<form style="display: none;" class="form-inline add-comment" method="post"><input type="text" {% if not logged_in %}disabled{% endif %} name="comment" class="input-large" placeholder="Add your comment"><button type="submit" class="btn" {% if not logged_in %}disabled{% endif %}>Comment</button></form>'); 
