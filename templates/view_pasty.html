@@ -37,7 +37,7 @@
         if ($("li.L{{comment.LineNo}}").prev('.icon-bullhorn').length == 0) {
             $("li.L{{comment.LineNo}}").before("<i class='icon-bullhorn' id='comment-markers'></i>");
         }
-        $("li.L{{comment.LineNo}}").after("<div style='display: none;' class='toggleMe{{comment.LineNo}} comment_container' id='{{ comment.key() }}'><span class='comment-author'>{{comment.User.nickname()}}</span><span class='comment-content'> - {{comment.Content}}</span> {% if comment.User == paster %}| <a class='deleteComment' href=\"javascript:void(0);\" onclick=\"delete_comment('{{ comment.key() }}')\">Delete</a>{% endif %}</div>");
+        $("li.L{{comment.LineNo}}").after("<div style='display: none;' class='toggleMe{{comment.LineNo}} comment_container' id='{{comment.key()}}' lineno='{{comment.LineNo}}'><span class='comment-author'>{{comment.User.nickname()}}</span><span class='comment-content'> - {{comment.Content}}</span> {% if comment.User == paster %}| <a class='deleteComment' href=\"javascript:void(0);\" onclick=\"delete_comment('{{ comment.key() }}')\">Delete</a>{% endif %}</div>");
         $("li.L{{comment.LineNo}}").attr("id", "toggleContainer")
     {% endfor %}
     });
@@ -48,6 +48,10 @@
                 alert("Something went Wrong!");
             })
             .success( function () {
+                lineno = $("#"+key).attr('lineno');
+                if($('li.L'+lineno).nextAll('.toggleMe'+lineno).length == 1) {
+                    $("li.L"+lineno).prev().remove()
+                }
                 $("#"+key).remove()
             })
     }
