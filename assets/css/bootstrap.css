@@ -812,6 +812,10 @@ h3 a:hover {
     cursor:pointer;
 }
 
+#toggleContainer:hover, #comment-markers:hover {
+    cursor:pointer;
+}
+
 .comment-author {
     text-decoration: underline;
     color: #5DB0E6;

@@ -16,6 +16,11 @@
 		    {% if is_owner %}
 		    <p><a href="/pasty/delete/{{pasty.key().id()}}">Delete</a> | <a href="/pasty/edit_pasty/{{pasty.key().id()}}">Edit</a></p>
 		    {% endif %}
+		    <div class="alert alert-success">
+		        Click on a line number to view/add comments for that line.
+		        The megaphone (<i class='icon-bullhorn'></i>)
+		        icon indicates lines which already have comments.
+		    </div>
 		    <pre class="prettyprint linenums">{{pasty.Content}}</pre>
 		</div>
 	{% endblock %}
@@ -35,9 +40,9 @@
     $(window).load(function() {
     {% for comment in comments %}
         if ($("li.L{{comment.LineNo}}").prev('.icon-bullhorn').length == 0) {
-            $("li.L{{comment.LineNo}}").before("<i class='icon-bullhorn' id='comment-markers'></i>");
+            $("li.L{{comment.LineNo}}").before("<i class='icon-bullhorn' id='comment-markers' lineno='{{comment.LineNo}}'></i>");
         }
-        $("li.L{{comment.LineNo}}").after("<div style='display: none;' class='toggleMe{{comment.LineNo}} comment_container' id='{{comment.key()}}' lineno='{{comment.LineNo}}'><span class='comment-author'>{{comment.User.nickname()}}</span><span class='comment-content'> - {{comment.Content}}</span> {% if comment.User == paster %}| <a class='deleteComment' href=\"javascript:void(0);\" onclick=\"delete_comment('{{ comment.key() }}')\">Delete</a>{% endif %}</div>");
+        $("li.L{{comment.LineNo}}").after("<div style='display: none;' class='comment_container toggleMe{{comment.LineNo}}' lineno='{{comment.LineNo}}' id='{{comment.key()}}' lineno='{{comment.LineNo}}'><span class='comment-author'>{{comment.User.nickname()}}</span><span class='comment-content'> - {{comment.Content}}</span> {% if comment.User == paster %}| <a class='deleteComment' href=\"javascript:void(0);\" onclick=\"delete_comment('{{ comment.key() }}')\">Delete</a>{% endif %}</div>");
         $("li.L{{comment.LineNo}}").attr("id", "toggleContainer")
     {% endfor %}
     });
@@ -59,11 +64,17 @@
     
     <script>
     $(window).load(function() {
-        $("li").click(function() {
-            var lineno = $(this).attr("class").substr(1);
-            $(this).nextAll('.toggleMe'+lineno).toggle();
-            $(this).nextAll('.add-comment:eq(0)').attr("action", "/add_comment/{{pasty.key().id()}}/" + lineno);
-            $(this).nextAll('.add-comment:eq(0)').toggle();
+        $("li, #comment-markers").click(function() {
+            if ($(this).attr('id') == 'comment-markers') { // User clicked on the icon
+                li = $(this).next()
+            }
+            else {
+                li = $(this)
+            }
+            var lineno = li.attr('class').substr(1)
+            li.nextAll('.toggleMe'+lineno).toggle();
+            li.nextAll('.add-comment:eq(0)').attr("action", "/add_comment/{{pasty.key().id()}}/" + lineno);
+            li.nextAll('.add-comment:eq(0)').toggle();
         });
     });
     </script>
