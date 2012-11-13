@@ -48,7 +48,7 @@ class Home(Handler):
 
     def post(self):
         paster = users.get_current_user()
-        name    = self.request.get('name').strip() or "Anonymous"
+        name    = self.request.get('name').strip() or "Untitled"
         content = self.request.get('content').strip()
         private = self.request.get('private').strip()
 
@@ -196,7 +196,7 @@ class Pasty_Manipulation(Handler):
     
     def edit_pasty_post(self, id):
         paster  = users.get_current_user()
-        name    = self.request.get('name').strip() or "Anonymous"
+        name    = self.request.get('name').strip() or "Untitled"
         content = self.request.get('content').strip()
 
         if name and content:
