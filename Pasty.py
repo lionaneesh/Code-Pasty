@@ -28,3 +28,4 @@ class Pasty(db.Model):
     User          = db.UserProperty(required = True)
     Created       = db.DateTimeProperty(auto_now_add = True)
     Private       = db.BooleanProperty(default = False)
+    Short_Url     = db.StringProperty(default = None)

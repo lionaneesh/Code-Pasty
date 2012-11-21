@@ -22,6 +22,11 @@ from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.api import memcache
 
+#-- For URL Shortening
+
+import json
+import urllib2
+
 from Template_Handler import Handler
 
 #-- Database Classes
@@ -32,6 +37,20 @@ from Comment import Comment
 #---- Webpage Handlers
 
 class Home(Handler):    
+    def make_short_url(self, url):
+        G_URL = "https://www.googleapis.com/urlshortener/v1/url" 
+        data = {"longUrl" : url}
+        data_j = json.dumps(data)
+        req = urllib2.Request(G_URL, data_j, {'Content-Type': 'application/json'})
+        f = urllib2.urlopen(req)
+        
+        g_url_object = json.loads(f.read())
+        surl = g_url_object['id']
+        
+        f.close()
+        
+        return surl
+        
     def get(self):
         paster = users.get_current_user()
         recent = memcache.get('recent')
@@ -54,6 +73,10 @@ class Home(Handler):
 
         if name and content and bool(paster):
             u = Pasty(Name = name, Content = content, User = paster, Private = bool(private))
+            u.put()
+            
+            surl = self.make_short_url('http://codepasty.appspot.com/pasty/'+str(u.key().id()))
+            u.Short_Url = surl
             u.put()
             
             # Update Memcache

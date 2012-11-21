@@ -23,6 +23,17 @@
 		        You can <a href="javascript:collapse_all()">Click Here</a>
 		        to collapse all comments at once.
 		    </div>
+		    
+		    {% if pasty.Short_Url %}
+		    <div class='form-horizontal'>
+		    <div class="control-group">
+                    <label class="control-label" for="short_url">Short Url</label>
+                    <div class="controls">
+                        <input type="text" id="short_url" value="{{pasty.Short_Url}}" onfocus="this.select();">
+                    </div>
+            </div>
+            </div>
+		    {% endif %}
 		    <pre class="prettyprint linenums">{{pasty.Content}}</pre>
 		</div>
 	{% endblock %}
