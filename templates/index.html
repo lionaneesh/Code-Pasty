@@ -21,7 +21,7 @@
                 <legend>Add a Pasty</legend>
                     <p style="font-size: small;">Parameters with * are mandatory</p>
                     <div class="control-group">
-                    <label class="control-label" for="input01">Pasty Name / Title</label>
+                    <label class="control-label" for="input01">Pasty Name</label>
                     <div class="controls">
                         <input type="text" class="input-xxlarge" {% if disable %}disabled{% endif %} name="name" id="input01">
                     </div>
@@ -48,5 +48,5 @@
 		    <h3><a href="/pasty/{{pasty.key().id()}}">{{pasty.Name}}</a> <span style="font-weight: 200;">by {{pasty.User.nickname()}}</span></h3>
 		    {% endfor %}
 		{% endif %}
-		{% endblock %}
+	{% endblock %}
 
