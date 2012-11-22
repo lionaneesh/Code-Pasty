@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 	{% block title %}Code Pasty | {{pasty.Name}}{% endblock %}
     {% if pasty.Private %}
-        {% block extra_meta %}
+        {% block robots %}
     <meta name="robots" content="noindex,nofollow" />
         {% endblock %}
     {% endif %}
+        {% block meta_description %}
+    <meta name="description" content="{{ pasty.Content[:155] }}" />
+        {% endblock %}
 
 	{% block container %}
 		<div class='span12'>
