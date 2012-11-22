@@ -6,7 +6,7 @@
         {% endblock %}
     {% endif %}
         {% block meta_description %}
-    <meta name="description" content="{{ pasty.Content[:155] }}" />
+    <meta name="description" content="{% if pasty.Content|count > 155 %}{{pasty.Content[:152] + '...'}}{% else %}{{ pasty.Content[:155] }}{% endif %}" />
         {% endblock %}
 
 	{% block container %}
