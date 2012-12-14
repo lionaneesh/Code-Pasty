@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2012 Code Pasty
+# Copyright 2012 CodePasty
 #
 # A simple code sharing website.
 #
@@ -36,21 +36,21 @@ from Comment import Comment
 
 #---- Webpage Handlers
 
-class Home(Handler):    
+class Home(Handler):
     def make_short_url(self, url):
-        G_URL = "https://www.googleapis.com/urlshortener/v1/url" 
+        G_URL = "https://www.googleapis.com/urlshortener/v1/url"
         data = {"longUrl" : url}
         data_j = json.dumps(data)
         req = urllib2.Request(G_URL, data_j, {'Content-Type': 'application/json'})
         f = urllib2.urlopen(req)
-        
+
         g_url_object = json.loads(f.read())
         surl = g_url_object['id']
-        
+
         f.close()
-        
+
         return surl
-        
+
     def get(self):
         paster = users.get_current_user()
         recent = memcache.get('recent')
@@ -74,13 +74,13 @@ class Home(Handler):
         if name and content and bool(paster):
             u = Pasty(Name = name, Content = content, User = paster, Private = bool(private))
             u.put()
-            
+
             surl = self.make_short_url('http://codepasty.appspot.com/pasty/'+str(u.key().id()))
             u.Short_Url = surl
             u.put()
-            
+
             # Update Memcache
-            
+
             # First update the recent posts
             if not bool(private):
                 recent = memcache.get('recent')
@@ -93,7 +93,7 @@ class Home(Handler):
             # Now update the post memcache
             memcache.set("pasty:%s" % (str(u.key().id())), u)
             self.redirect('/pasty/%s' % u.key().id())
-        
+
         else:
             self.redirect(users.create_login_url(self.request.uri))
 
@@ -123,10 +123,10 @@ class Delete_Comment(Handler):
     def get(self, key):
         paster = users.get_current_user()
         u = db.GqlQuery("SELECT * FROM Comment WHERE __key__ = KEY(:1)", key)
-        
+
         if u.count() == 1:
             comment = u.fetch(1)[0]
-            
+
             if comment.User == paster:
                 comment_id = comment.key().id()
                 post_id = comment.PostId
@@ -141,7 +141,7 @@ class Delete_Comment(Handler):
                         memcache.set("comments:"+post_id, comments)
                         removed_from_memcache = 1
                         break
-                
+
                 if removed_from_memcache == 0:
                     # Something's wrong with this memcache entry, lets clean it up
                     logging.error("Something wrong with comment:"+post_id+". I can't find the comment to delete. \
@@ -155,7 +155,7 @@ class Delete_Comment(Handler):
                 self.error('403')
         else: # no such entry
             self.error('404')
-    
+
 class Add_Comments(Handler):
     def post(self, id, lineno):
         paster = users.get_current_user()
@@ -178,9 +178,9 @@ class Add_Comments(Handler):
             self.redirect('/pasty/' + id)
 
 class Pasty_Manipulation(Handler):
-    
+
     #-- GET functions
-    
+
     def delete_pasty(self, id):
         u = Pasty.get_by_id(int(id))
         if u:
@@ -192,7 +192,7 @@ class Pasty_Manipulation(Handler):
             self.redirect('/')
         else:
             self.error('404')
-    
+
     def edit_pasty(self, id):
         paster  = users.get_current_user()
         u = memcache.get("pasty:%s" % id)
@@ -209,14 +209,14 @@ class Pasty_Manipulation(Handler):
     def get(self, action, id):
         actions = {'delete': self.delete_pasty,
                    'edit_pasty': self.edit_pasty }
-        
+
         if action in actions:
                 actions[action](id)
         else:
             self.error('404')
-    
+
     #-- POST functions
-    
+
     def edit_pasty_post(self, id):
         paster  = users.get_current_user()
         name    = self.request.get('name').strip() or "Untitled"
@@ -225,7 +225,7 @@ class Pasty_Manipulation(Handler):
         if name and content:
             u = Pasty.get_by_id(int(id))
             u2 = memcache.get("pasty:%s" % id)
-            
+
             if u:
                 if u.User == paster:
                     u.Name = name
@@ -242,7 +242,7 @@ class Pasty_Manipulation(Handler):
                 self.error('404')
         else:
             self.redirect('/pasty/edit_pasty/'+id)
-            
+
     def post(self, action, id):
         actions = {'edit_pasty': self.edit_pasty_post}
 

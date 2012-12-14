@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-	{% block title %}Code Pasty | {{pasty.Name}}{% endblock %}
+	{% block title %}CodePasty | {{pasty.Name}}{% endblock %}
     {% if pasty.Private %}
         {% block robots %}
     <meta name="robots" content="noindex,nofollow" />
@@ -26,7 +26,7 @@
 		        You can <a href="javascript:collapse_all()">Click Here</a>
 		        to collapse all comments at once.
 		    </div>
-		    
+
 		    {% if pasty.Short_Url %}
 		    <div class='form-horizontal'>
 		    <div class="control-group">
@@ -48,15 +48,15 @@
             $(this).attr("class", "L"+index)
         });
     });
-    
+
     function collapse_all() {
        $(".comment_container").toggle()
     }
 
     $(window).load(function() {
-       $('li').after('<form style="display: none;" class="form-inline add-comment" method="post"><input type="text" {% if not logged_in %}disabled{% endif %} name="comment" class="input-large" placeholder="Add your comment"><button type="submit" class="btn" {% if not logged_in %}disabled{% endif %}>Comment</button></form>'); 
+       $('li').after('<form style="display: none;" class="form-inline add-comment" method="post"><input type="text" {% if not logged_in %}disabled{% endif %} name="comment" class="input-large" placeholder="Add your comment"><button type="submit" class="btn" {% if not logged_in %}disabled{% endif %}>Comment</button></form>');
     });
-    
+
     $(window).load(function() {
     {% for comment in comments %}
         if ($("li.L{{comment.LineNo}}").prev('.icon-bullhorn').length == 0) {
@@ -66,7 +66,7 @@
         $("li.L{{comment.LineNo}}").attr("id", "toggleContainer")
     {% endfor %}
     });
-    
+
     function delete_comment(key) {
             $.get('/comments/delete/' + key)
             .error( function () {
@@ -81,7 +81,7 @@
             })
     }
     </script>
-    
+
     <script>
     $(window).load(function() {
         $("li, #comment-markers").click(function() {

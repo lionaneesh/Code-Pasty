@@ -1,7 +1,7 @@
-Code Pasty
+CodePasty
 ==========
 
-A simple code sharing website, supporting inline comments and syntax highlighting.
+[CodePasty](http://www.codepasty.com/) is a simple code sharing website, supporting inline comments and syntax highlighting.
 
 FAQ
 ===
@@ -19,7 +19,7 @@ Screenshots
 Mobile Screenshots
 ==================
 
-Code Pasty works just as perfect on smaller screens
+CodePasty works just as perfect on smaller screens
 
 ![Homepage](http://img838.imageshack.us/img838/6813/screenshot2012110413394.png)
 ![Code View](http://img99.imageshack.us/img99/6813/screenshot2012110413394.png)

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-	{% block title %}Code Pasty | Edit {{ pasty.Name }}{% endblock %}
+	{% block title %}CodePasty | Edit {{ pasty.Name }}{% endblock %}
 	{% block container %}
 	    <div class='hero-unit' style="padding: 20px;">
 	    <form class="form-horizontal" method="post">
@@ -18,7 +18,7 @@
                         <textarea type="text" id="input01" rows="10" name="content" class='input-xxlarge'>{{ pasty.Content }}</textarea>
                     </div>
                     </div>
-                    
+
                     <div class="form-actions">
                         <button type="submit" {% if disable %}disabled="disabled"{% endif %} class="btn btn-primary {% if disable %}disabled{% endif%}">Paste</button>
                     </div>

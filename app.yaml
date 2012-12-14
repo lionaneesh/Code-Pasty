@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2012 Code Pasty
+# Copyright 2012 CodePasty
 #
 # A simple code sharing website.
 #

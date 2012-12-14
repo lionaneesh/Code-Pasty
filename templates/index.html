@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-	{% block title %}Code Pasty | Making code sharing simple{% endblock %}
+	{% block title %}CodePasty | Making code sharing simple{% endblock %}
 	{% block meta_description %}
-	    <meta name="description" content="Code Pasty is a simple code sharing website, which supports inline comments and syntax highlighting.">
+	    <meta name="description" content="CodePasty is a simple code sharing website, which supports inline comments and syntax highlighting.">
 	{% endblock %}
 	{% block container %}
 		<div class="hero-unit" style="padding: 20px;">
-		    <h1 style="font-size: 50px;">Code Pasty</h1>
+		    <h1 style="font-size: 50px;">CodePasty</h1>
 		    <div style="float: right" class="nav">
 		        {% if not disable %}
 		        <h3><a href="{{logout_link}}">Logout</a></h3>
@@ -34,7 +34,7 @@
                         <textarea type="text" id="input01" rows="10" name="content" class='input-xxlarge' {% if disable %}disabled{% endif %}></textarea>
                     </div>
                     </div>
-                    
+
                     <div class="form-actions">
                         <button type="submit" {% if disable %}disabled="disabled"{% endif %} class="btn btn-primary {% if disable %}disabled{% endif%}">Public Paste</button>
                         <button type="submit" {% if disable %}disabled="disabled"{% endif %} class="btn btn-primary {% if disable %}disabled{% endif%}" value="1" name='private'>Private Paste</button>
