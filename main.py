@@ -224,17 +224,17 @@ class Pasty_Manipulation(Handler):
 
         if name and content:
             u = Pasty.get_by_id(int(id))
-            u2 = memcache.get("pasty:%s" % id)
-
             if u:
                 if u.User == paster:
-                    u.Name = name
+                    # if the title is changed
+                    # we need to rebild 'recent'
+                    if u.Name != name:
+                        memcache.delete('recent')
+                        u.Name = name
+
                     u.Content = content
                     u.put()
-                    if u2:
-                        u2.Name = name
-                        u2.Content = content
-                        memcache.set("pasty:"+id, u2)
+                    memcache.set("pasty:"+id, u)
                     self.redirect('/pasty/%s' % id)
                 else:
                     self.error('403')
